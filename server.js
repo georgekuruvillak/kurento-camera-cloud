@@ -43,16 +43,20 @@ ws.onmessage = function(message) {
 	console.info('Received message: ' + message.data);
 
 	switch (parsedMessage.id) {
-	case 'registerResponse':
-		registerResponse(parsedMessage);
-		break;
-	case 'playCam':
-		playCam(parsedMessage, sdpOffer);
-		break;
-	case 'iceCandidate':
-		break;
-	default:
-		console.error('Unrecognized message', parsedMessage);
+		case 'registerResponse':
+			registerResponse(parsedMessage);
+			break;
+		case 'playCam':
+			//playCam(parsedMessage, sdpOffer);
+			break;
+		case 'sdpOffer':
+			console.log(parsedMessage);
+			playCam(parsedMessage);
+			break;
+		case 'iceCandidate':
+			break;
+		default:
+			console.error('Unrecognized message', parsedMessage);
 	}
 }
 
@@ -71,22 +75,23 @@ function registerResponse(response){
 	}
 }
 
-function playCam(message, sdpOffer){
+function playCam(message){
 	console.log("Message:" + JSON.stringify(message));
 	var cam_url = message.cam_url;
+	var sdpOffer = message.sdpOffer;
 	getKurentoClient(function(error, kurentoClient) {
 		if (error) {
             console.log("Error: Getting Kurento Client failed.");
             return;
         }
-
+        console.log("Kurento client created.");
         kurentoClient.create('MediaPipeline', function(error, pipeline) {
             if (error) {
             	console.log("Error: Creating Media Pipeline failed.");
             	stop(pipeline);
             	return;
             }
-
+            console.log("Pipeline created.");
             pipeline.create("PlayerEndpoint", {uri: cam_url}, function(error, player){
   			  	if(error) {
   			  		console.log("Error: Creating PlayerEndpoint failed.");
@@ -94,6 +99,7 @@ function playCam(message, sdpOffer){
   			  		return;
   			  	}
 
+  			  	console.log("PlayerEndpoint created.");
   			  	pipeline.create("WebRtcEndpoint", function(error, webRtcEndpoint){
   			  		if(error) {
   			  			console.log("Error: Creating WebRtcEndpoint failed.");
@@ -101,6 +107,7 @@ function playCam(message, sdpOffer){
   			  			return;
   			  		}
 
+  			  		console.log("WebRtcEndpoint created.");
   			  		webRtcEndpoint.processOffer(sdpOffer, function(error, sdpAnswer){
   						if(error){
   							console.log("Error: Processing SDP Offer from peer failed.");
@@ -108,16 +115,22 @@ function playCam(message, sdpOffer){
   			  				return;
   						}
 						sendSdpAnswer(sdpAnswer);
-						gatherCandidates(function(error) {
+						webRtcEndpoint.gatherCandidates(function(error) {
         					if (error) {
             					console.log("Error: Gather IceCandidates failed.");
   			  					stop(pipeline);
   			  					return;
         					}
     					});
+    					console.log("Gathering Ice candidates created.");
   					});
 
-  			  	});
+  					webRtcEndpoint.on('OnIceCandidate', function(event) {
+                    	var candidate = kurento.getComplexType('IceCandidate')(event.candidate);
+                    	sendIceCandidate(candidate);
+                    });
+                });
+
 
   			});
 
@@ -134,6 +147,14 @@ function stop(pipeline){
 	}
 }
 
+function sendIceCandidate(candidate){
+	var message = {
+		id : 'iceCandidate',
+		name : 'kms',
+		candidate: candidate
+	};
+	sendMessage(message);
+}
 
 function sendSdpAnswer(sdpAnswer) {
 	
