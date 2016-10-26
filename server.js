@@ -15,6 +15,7 @@ const REGISTERED = 2;
 var registerState = null
 var kurentoClient = null;
 var ws = new WebSocketClient('ws://139.59.4.43:8443/camera');
+var ws_uri = 'ws://139.59.4.43:8888/kurento'
 
 function setRegisterState(nextState) {
 	registerState = nextState;
@@ -180,9 +181,9 @@ function getKurentoClient(callback) {
         return callback(null, kurentoClient);
     }
 
-    kurento(argv.ws_uri, function(error, _kurentoClient) {
+    kurento(ws_uri, function(error, _kurentoClient) {
         if (error) {
-            var message = 'Coult not find media server at address ' + argv.ws_uri;
+            var message = 'Coult not find media server at address ' + ws_uri;
             return callback(message + ". Exiting with error " + error);
         }
 
