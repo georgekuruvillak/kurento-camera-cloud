@@ -117,15 +117,40 @@ function playCam(message){
   			  				return;
   						}
 						sendSdpAnswer(sdpAnswer);
-						webRtcEndpoint.gatherCandidates(function(error) {
-        					if (error) {
+						
+  					});
+
+  					webRtcEndpoint.gatherCandidates(function(error) {
+        				if (error) {
+            				console.log("Error: Gather IceCandidates failed.");
+  			  				stop(pipeline);
+  			  				return;
+        				}
+
+        				console.log("Gathering Ice candidates created.");
+    				});
+    					
+
+  					player.connect(webRtcEndpoint, function(error){
+  						if (error) {
+            				console.log("Error: Gather IceCandidates failed.");
+  			  				stop(pipeline);
+  			  				return;
+        				}
+
+  						console.log("PlayerEndpoint-->WebRtcEndpoint connection established");
+
+  						player.play(function(error){
+  					  		if (error) {
             					console.log("Error: Gather IceCandidates failed.");
   			  					stop(pipeline);
   			  					return;
         					}
-    					});
-    					console.log("Gathering Ice candidates created.");
+
+  					  		console.log("Player playing ...");
+  						});
   					});
+
 
   					webRtcEndpoint.on('OnIceCandidate', function(event) {
                     	var candidate = kurento.getComplexType('IceCandidate')(event.candidate);
