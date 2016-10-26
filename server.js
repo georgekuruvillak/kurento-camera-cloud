@@ -13,6 +13,7 @@ const NOT_REGISTERED = 0;
 const REGISTERING = 1;
 const REGISTERED = 2;
 var registerState = null
+var kurentoClient = null;
 var ws = new WebSocketClient('ws://139.59.4.43:8443/camera');
 
 function setRegisterState(nextState) {
