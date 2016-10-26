@@ -117,10 +117,8 @@ function playCam(message){
   			  				return;
   						}
 						sendSdpAnswer(sdpAnswer);
-						
-  					});
 
-  					webRtcEndpoint.gatherCandidates(function(error) {
+						webRtcEndpoint.gatherCandidates(function(error) {
         				if (error) {
             				console.log("Error: Gather IceCandidates failed.");
   			  				stop(pipeline);
@@ -128,8 +126,12 @@ function playCam(message){
         				}
 
         				console.log("Gathering Ice candidates created.");
-    				});
+    					});
     					
+						
+  					});
+
+  					
 
   					player.connect(webRtcEndpoint, function(error){
   						if (error) {
