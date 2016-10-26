@@ -118,16 +118,17 @@ function playCam(message){
   						}
 						sendSdpAnswer(sdpAnswer);
 
+						/*
 						webRtcEndpoint.gatherCandidates(function(error) {
-        				if (error) {
-            				console.log("Error: Gather IceCandidates failed.");
-  			  				stop(pipeline);
-  			  				return;
-        				}
+        					if (error) {
+            					console.log("Error: Gather IceCandidates failed.");
+  			  					stop(pipeline);
+  			  					return;
+        					}
 
-        				console.log("Gathering Ice candidates created.");
+        					console.log("Gathering Ice candidates created.");
     					});
-    					
+    					*/
 						
   					});
 
@@ -154,10 +155,10 @@ function playCam(message){
   					});
 
 
-  					webRtcEndpoint.on('OnIceCandidate', function(event) {
+  					/*webRtcEndpoint.on('OnIceCandidate', function(event) {
                     	var candidate = kurento.getComplexType('IceCandidate')(event.candidate);
                     	sendIceCandidate(candidate);
-                    });
+                    });*/
                 });
 
 
