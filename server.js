@@ -134,7 +134,6 @@ function playCam(message){
 
               for(var i = 0; i < remoteCandidates.length; i++){
                 addIceRemoteCandidate(remoteCandidates[i]);
-                //console.log(JSON.stringify(remoteCandidates[i]));
               }
 
 						  webRtcPeerEndpoint.gatherCandidates(function(error) {
