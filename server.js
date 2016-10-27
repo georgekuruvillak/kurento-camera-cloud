@@ -155,10 +155,10 @@ function playCam(message){
   					});
 
 
-  					/*webRtcEndpoint.on('OnIceCandidate', function(event) {
+  					webRtcEndpoint.on('OnIceCandidate', function(event) {
                     	var candidate = kurento.getComplexType('IceCandidate')(event.candidate);
                     	sendIceCandidate(candidate);
-                    });*/
+                    });
                 });
 
 
