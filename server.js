@@ -15,7 +15,8 @@ const REGISTERED = 2;
 var registerState = null
 var kurentoClient = null;
 var ws = new WebSocketClient('ws://139.59.4.43:8443/camera');
-var ws_uri = 'ws://139.59.4.43:8888/kurento'
+var ws_uri = 'ws://139.59.4.43:8888/kurento';
+var remoteWebRtcEndpoint = null;
 
 function setRegisterState(nextState) {
 	registerState = nextState;
@@ -120,6 +121,7 @@ function playCam(message){
               return;
             }
 
+            remoteWebRtcEndpoint = webRtcPeerEndpoint;
   			  	console.log("WebRtcEndpoint created.");
   			  	webRtcPeerEndpoint.processOffer(sdpOffer, function(error, sdpAnswer){
   					 if(error){
@@ -258,6 +260,8 @@ function getKurentoClient(callback) {
 
 function addIceRemoteCandidate(candidate){
   console.log("Adding remote Ice Candidate: " + candidate);
-  webRtcPeerEndpoint.addIceCandidate(candidate);
+  if(remoteWebRtcEndpoint){
+    remoteWebRtcEndpoint.addIceCandidate(candidate);
+  }
 }
 
