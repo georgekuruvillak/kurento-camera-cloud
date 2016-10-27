@@ -82,79 +82,75 @@ function playCam(message){
 	var cam_url = message.cam_url;
 	var sdpOffer = message.sdpOffer;
 	getKurentoClient(function(error, kurentoClient) {
-		if (error) {
-            console.log("Error: Getting Kurento Client failed.");
-            return;
-        }
-        console.log("Kurento client created.");
-        kurentoClient.create('MediaPipeline', function(error, pipeline) {
-            if (error) {
-            	console.log("Error: Creating Media Pipeline failed.");
-            	stop(pipeline);
-            	return;
-            }
-            console.log("Pipeline created.");
-            pipeline.create("PlayerEndpoint", {uri: cam_url}, function(error, player){
-  			  	if(error) {
-  			  		console.log("Error: Creating PlayerEndpoint failed.");
-  			  		stop(pipeline);
-  			  		return;
-  			  	}
+    if (error) {
+      console.log("Error: Getting Kurento Client failed.");
+      return;
+    }
+    console.log("Kurento client created.");
+    kurentoClient.create('MediaPipeline', function(error, pipeline) {
+      if (error) {
+        console.log("Error: Creating Media Pipeline failed.");
+        stop(pipeline);
+        return;
+      }
+      
+      console.log("Pipeline created.");
+      pipeline.create("PlayerEndpoint", {uri: cam_url}, function(error, player){
+  		  if(error) {
+  			  console.log("Error: Creating PlayerEndpoint failed.");
+  			  stop(pipeline);
+  			  return;
+  			}
 
-  			  	console.log("PlayerEndpoint created.");
-  			  	pipeline.create("WebRtcEndpoint", function(error, webRtcEndpoint){
-  			  		if(error) {
-  			  			console.log("Error: Creating WebRtcEndpoint failed.");
+  			console.log("PlayerEndpoint created.");
+  			pipeline.create("WebRtcEndpoint", function(error, webRtcEndpoint){
+  			  if(error) {
+  			  	console.log("Error: Creating WebRtcEndpoint failed.");
+  			  	stop(pipeline);
+  			  	return;
+  			  }
+
+          pipeline.create("WebRtcEndpoint", function(error, webRtcPeerEndpoint){
+            if(error) {
+              console.log("Error: Creating WebRtcEndpoint failed.");
+              stop(pipeline);
+              return;
+            }
+
+  			  	console.log("WebRtcEndpoint created.");
+  			  	webRtcPeerEndpoint.processOffer(sdpOffer, function(error, sdpAnswer){
+  					 if(error){
+  							console.log("Error: Processing SDP Offer from peer failed.");
   			  			stop(pipeline);
   			  			return;
-  			  		}
-
-              pipeline.create("WebRtcEndpoint", function(error, webRtcPeerEndpoint){
-              if(error) {
-                console.log("Error: Creating WebRtcEndpoint failed.");
-                stop(pipeline);
-                return;
-              }
-
-  			  		console.log("WebRtcEndpoint created.");
-  			  		webRtcPeerEndpoint.processOffer(sdpOffer, function(error, sdpAnswer){
-  						if(error){
-  							console.log("Error: Processing SDP Offer from peer failed.");
-  			  				stop(pipeline);
-  			  				return;
   						}
-						sendSdpAnswer(sdpAnswer);
+						  sendSdpAnswer(sdpAnswer);
 
-						
-						webRtcPeerEndpoint.gatherCandidates(function(error) {
-        					if (error) {
-            					console.log("Error: Gather IceCandidates failed.");
-  			  					stop(pipeline);
-  			  					return;
-        					}
-
-        					console.log("Gathering Ice candidates created.");
-    					});
-    					
-						
-  					});
-
-  					
-
-  					player.connect(webRtcEndpoint, function(error){
-  						if (error) {
-            				console.log("Error: Gather IceCandidates failed.");
+						  webRtcPeerEndpoint.gatherCandidates(function(error) {
+        				if (error) {
+            			console.log("Error: Gather IceCandidates failed.");
   			  				stop(pipeline);
   			  				return;
         				}
+
+        				console.log("Gathering Ice candidates created.");
+    					});
+    				});
+
+  					player.connect(webRtcEndpoint, function(error){
+  						if (error) {
+            		console.log("Error: Gather IceCandidates failed.");
+  			  			stop(pipeline);
+  			  			return;
+        			}
 
   						console.log("PlayerEndpoint-->WebRtcEndpoint connection established");
 
               webRtcPeerEndpoint.connect(webRtcEndpoint, function(error){
                 if (error) {
-                    console.log("Error: Gather IceCandidates failed.");
-                    stop(pipeline);
-                    return;
+                  console.log("Error: Gather IceCandidates failed.");
+                  stop(pipeline);
+                  return;
                 }
 
                 console.log("webRtcPeerEndpoint-->WebRtcEndpoint connection established");
@@ -170,35 +166,28 @@ function playCam(message){
 
               
                 });
-
-              
               });
 
   						player.play(function(error){
-  					  		if (error) {
-            					console.log("Error: Gather IceCandidates failed.");
-  			  					stop(pipeline);
-  			  					return;
-        					}
+  					  	if (error) {
+            			console.log("Error: Gather IceCandidates failed.");
+  			  				stop(pipeline);
+  			  				return;
+        				}
 
-  					  		console.log("Player playing ...");
+  					  	console.log("Player playing ...");
   						});
   					});
 
-
-  					webRtcPeerEndpoint.on('OnIceCandidate', function(event) {
-                    	var candidate = kurento.getComplexType('IceCandidate')(event.candidate);
-                    	sendIceCandidate(candidate);
-                    });
-                });
-
-
-  			});
-
-
+            webRtcPeerEndpoint.on('OnIceCandidate', function(event) {
+              var candidate = kurento.getComplexType('IceCandidate')(event.candidate);
+              sendIceCandidate(candidate);
+            });
+          });
         });
-	});
-	
+      });
+	  });
+  });
 }
 
 
