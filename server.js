@@ -132,8 +132,9 @@ function playCam(message){
   						}
 						  sendSdpAnswer(sdpAnswer);
 
-              for(var i = 0; i = remoteCandidates.length; i++){
+              for(var i = 0; i < remoteCandidates.length; i++){
                 addIceRemoteCandidate(remoteCandidates[i]);
+                //console.log(JSON.stringify(remoteCandidates[i]));
               }
 
 						  webRtcPeerEndpoint.gatherCandidates(function(error) {
@@ -265,7 +266,7 @@ function getKurentoClient(callback) {
 
 function addIceRemoteCandidate(candidate){
   
-  if(remoteWebRtcEndpoint){
+  if(remoteWebRtcEndpoint && candidate){
     console.log("Adding remote Ice Candidate: " + candidate);
     remoteWebRtcEndpoint.addIceCandidate(candidate);
   }else{
