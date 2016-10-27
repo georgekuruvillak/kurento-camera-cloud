@@ -266,8 +266,9 @@ function getKurentoClient(callback) {
 
 function addIceRemoteCandidate(candidate){
   
-  if(remoteWebRtcEndpoint && candidate){
+  if(remoteWebRtcEndpoint && candidate && kurentoClient){
     console.log("Adding remote Ice Candidate: " + candidate);
+    candidate = kurentoClient.register.complexTypes.IceCandidate(candidate);
     remoteWebRtcEndpoint.addIceCandidate(candidate);
   }else{
     console.log("Storing remote Ice Candidate: " + candidate);
