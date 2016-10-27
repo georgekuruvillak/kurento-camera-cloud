@@ -161,6 +161,7 @@ function playCam(message){
   					});
 
             webRtcEndpoint.on('OnIceCandidate', function(event) {
+              console.log(JSON.stringify(event));
               var candidate = kurento.getComplexType('IceCandidate')(event.candidate);
               sendIceCandidate(candidate);
             });
