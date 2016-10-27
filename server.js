@@ -17,6 +17,7 @@ var kurentoClient = null;
 var ws = new WebSocketClient('ws://139.59.4.43:8443/camera');
 var ws_uri = 'ws://139.59.4.43:8888/kurento';
 var remoteWebRtcEndpoint = null;
+var remoteCandidates = [];
 
 function setRegisterState(nextState) {
 	registerState = nextState;
@@ -130,6 +131,10 @@ function playCam(message){
   			  			return;
   						}
 						  sendSdpAnswer(sdpAnswer);
+
+              for(var i = 0; i = remoteCandidates.length; i++){
+                addIceRemoteCandidate(remoteCandidates[i]);
+              }
 
 						  webRtcPeerEndpoint.gatherCandidates(function(error) {
         				if (error) {
@@ -259,9 +264,14 @@ function getKurentoClient(callback) {
 }
 
 function addIceRemoteCandidate(candidate){
-  console.log("Adding remote Ice Candidate: " + candidate);
+  
   if(remoteWebRtcEndpoint){
+    console.log("Adding remote Ice Candidate: " + candidate);
     remoteWebRtcEndpoint.addIceCandidate(candidate);
+  }else{
+    console.log("Storing remote Ice Candidate: " + candidate);
+    remoteCandidates.push(candidate);
   }
 }
 
+          
