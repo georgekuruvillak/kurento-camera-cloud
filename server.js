@@ -56,6 +56,9 @@ ws.onmessage = function(message) {
 			playCam(parsedMessage);
 			break;
 		case 'iceCandidate':
+      console.log(parsedMessage);
+      addIceRemoteCandidate(parsedMessage.candidate);
+
 			break;
 		default:
 			console.error('Unrecognized message', parsedMessage);
@@ -251,5 +254,10 @@ function getKurentoClient(callback) {
         kurentoClient = _kurentoClient;
         callback(null, kurentoClient);
     });
+}
+
+function addIceRemoteCandidate(candidate){
+  console.log("Adding remote Ice Candidate: " + candidate);
+  webRtcPeerEndpoint.addIceCandidate(candidate);
 }
 
