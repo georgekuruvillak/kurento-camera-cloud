@@ -166,6 +166,19 @@ function playCam(message){
 
               
                 });
+
+                webRtcPeerEndpoint.connect(webRtcEndpoint, function(error){
+                  if (error) {
+                    console.log("Error: Gather IceCandidates failed.");
+                    stop(pipeline);
+                    return;
+                  }
+
+                  console.log("WebRtcPeerEndpoint --> webRtcEndpoint connection established");
+
+              
+                });
+
               });
 
   						player.play(function(error){
