@@ -59,7 +59,7 @@ ws.onmessage = function(message) {
 			break;
 		case 'iceCandidate':
       console.log(parsedMessage);
-      addIceRemoteCandidate(parsedMessage.candidate);
+      //addIceRemoteCandidate(parsedMessage.candidate);
 
 			break;
 		default:
