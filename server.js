@@ -118,7 +118,7 @@ function playCam(message){
   						}
 						sendSdpAnswer(sdpAnswer);
 
-						/*
+						
 						webRtcEndpoint.gatherCandidates(function(error) {
         					if (error) {
             					console.log("Error: Gather IceCandidates failed.");
@@ -128,7 +128,7 @@ function playCam(message){
 
         					console.log("Gathering Ice candidates created.");
     					});
-    					*/
+    					
 						
   					});
 
